@@ -1,8 +1,46 @@
-<script src="../socket.io.js"></script>
-<script>
-  var socket = io.connect('http://127.0.0.1:1337');
-  socket.on('news', function (data) {
-    console.log(data);
-    socket.emit('my other event', { my: 'data' });
-  });
-</script>
+<!DOCTYPE html>
+<html>
+  <head>
+    <style type="text/css">
+      html, body, #map-canvas { height: 100%; margin: 0; padding: 0;}
+    </style>
+    <script type="text/javascript"
+      src="https://maps.googleapis.com/maps/api/js?sensor=false">
+    </script>
+    <script src="../socket.io.js"></script>
+    <script>
+      var socket = io.connect('http://127.0.0.1:1337');
+      socket.on('news', function (data) {
+        console.log(data);
+        socket.emit('my other event', { my: 'data' });
+      });
+    </script>
+    <script type="text/javascript">
+      function initialize() {
+        var mapOptions = {
+          center: { lat: 43.8496569, lng: 18.3736896},
+          zoom: 14,
+          mapTypeId: "OSM",
+          mapTypeControl: false,
+          streetViewControl: false
+        };
+        
+        var map = new google.maps.Map(document.getElementById('map-canvas'),
+            mapOptions);
+
+        map.mapTypes.set("OSM", new google.maps.ImageMapType({
+                getTileUrl: function(coord, zoom) {
+                    return "http://tile.thunderforest.com/transport/" + zoom + "/" + coord.x + "/" + coord.y + ".png";
+                },
+                tileSize: new google.maps.Size(256, 256),
+                name: "OpenStreetMap",
+                maxZoom: 18
+        }));
+      }
+      google.maps.event.addDomListener(window, 'load', initialize);
+    </script>
+  </head>
+  <body>
+<div id="map-canvas"></div>
+  </body>
+</html>
